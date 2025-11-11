@@ -16,6 +16,10 @@ class Node:
         self.grad_wrt_parents = []
         self.partial_derivative = 0
 
+        #   New parameters for reverse mode
+        self.reverse_partial_derivative = 0
+        
+        
         if self.operator == "input":
             Node.input_count += 1
             self.name = "x%d" % (Node.input_count)
@@ -90,6 +94,17 @@ def topological_order(rootNode):
     add_children(rootNode)
     return list(reversed(ordering))
 
+# travsersed order for reverse mode
+def reverse_topological_order(leafNode):
+    def add_parents(node):
+        if node not in visited:
+            visited.add(node)
+            for parent in node.parent_nodes:
+                add_parents(parent)
+            ordering.append(node)
+    ordering, visited = [], set()
+    add_parents(leafNode)
+    return list(reversed(ordering))
 
 def forward(rootNode):
     rootNode.partial_derivative = 1
@@ -119,3 +134,36 @@ def forward(rootNode):
                 value_process.strip(" + "),
                 str(node.partial_derivative.__round__(3)))
             )
+
+#########   Implementation for reverse mode
+def reverse_mode(leafNode):
+    ordering = reverse_topological_order(leafNode)
+    ordering[0].reverse_partial_derivative = 1  # output node
+    input_gradients = {}
+    for node in ordering[1:]:
+        symbol_process = ""
+        value_process = ""
+        for i in range(len(node.child_nodes)):
+            child = node.child_nodes[i]
+            dchild_dnode = child.grad_wrt_parents[child.parent_nodes.index(node)]
+            node.reverse_partial_derivative += dchild_dnode * child.reverse_partial_derivative
+            symbol_process += "(d" + leafNode.name + "/d" + child.name + ")"\
+                              + "(d" + child.name + "/d" + node.name + ") + "
+            value_process += "(" + str(child.reverse_partial_derivative.__round__(3)) + ")(" + \
+               str(dchild_dnode.__round__(3)) + ") + "
+
+        if Node.verbose == True:
+            print('d{:<2}/d{:<2} = {:<45} \n\t= {:<30} = {:<5}'.format(
+                leafNode.name,
+                node.name,
+                symbol_process.strip(" + "),
+                value_process.strip(" + "),
+                str(node.reverse_partial_derivative.__round__(3)))
+            )
+            
+        if (len(node.parent_nodes) == 0):
+            input_gradients[node.name] = node.reverse_partial_derivative
+    
+    for name in input_gradients:
+        print("Gradient of output w.r.t {}: {:.3f}".format(name, input_gradients[name]))
+
