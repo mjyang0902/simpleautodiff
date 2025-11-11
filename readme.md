@@ -1,5 +1,5 @@
 # Simple Automatic Differentiation
-This repository demonstrates a simple implementation of automatic differentiation.
+The repository implements reverse mode in original `simpleautodiff` as an expansion. 
 
 ## Project Page
 Please refer to our [page](https://www.csie.ntu.edu.tw/~cjlin/papers/autodiff/) for the document and slides.
@@ -44,3 +44,18 @@ dv3/dx1 = (dv3/dv1)(dv1/dx1) + (dv3/dv2)(dv2/dx1)
 dv5/dx1 = (dv5/dv3)(dv3/dx1) + (dv5/dv4)(dv4/dx1)       
         = (-1)(5.5) + (-1)(0)            = 5.5  
 ```
+Besides, the code performs reverse-mode automatic differentiation at $v5=11.652$.
+```dv5/dv4 = (dv5/dv5)(dv5/dv4)
+        = (1)(-1)                        = -1
+dv5/dv3 = (dv5/dv5)(dv5/dv3)
+        = (1)(1)                         = 1
+dv5/dv2 = (dv5/dv3)(dv3/dv2)
+        = (1)(1)                         = 1
+dv5/dx2 = (dv5/dv2)(dv2/dx2) + (dv5/dv4)(dv4/dx2)
+        = (1)(2) + (-1)(0.284)           = 1.716
+dv5/dv1 = (dv5/dv3)(dv3/dv1)
+        = (1)(1)                         = 1
+dv5/dx1 = (dv5/dv1)(dv1/dx1) + (dv5/dv2)(dv2/dx1)
+        = (1)(0.5) + (1)(5)              = 5.5
+```
+
