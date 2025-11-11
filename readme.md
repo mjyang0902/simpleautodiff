@@ -45,7 +45,8 @@ dv5/dx1 = (dv5/dv3)(dv3/dx1) + (dv5/dv4)(dv4/dx1)
         = (-1)(5.5) + (-1)(0)            = 5.5  
 ```
 Besides, the code performs reverse-mode automatic differentiation at $v5=11.652$.
-```dv5/dv4 = (dv5/dv5)(dv5/dv4)
+```
+dv5/dv4 = (dv5/dv5)(dv5/dv4)
         = (1)(-1)                        = -1
 dv5/dv3 = (dv5/dv5)(dv5/dv3)
         = (1)(1)                         = 1
@@ -57,5 +58,4 @@ dv5/dv1 = (dv5/dv3)(dv3/dv1)
         = (1)(1)                         = 1
 dv5/dx1 = (dv5/dv1)(dv1/dx1) + (dv5/dv2)(dv2/dx1)
         = (1)(0.5) + (1)(5)              = 5.5
-```
 
